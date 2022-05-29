@@ -12,10 +12,7 @@ compileJava.options.encoding = 'UTF-8'
 compileTestJava.options.encoding = 'UTF-8'
 
 allure {
-    version = '2.16.1'
-    useJUnit5 {
-        version = '2.16.1'
-    }
+    version = '2.17.2'
 }
 
 repositories {
@@ -25,15 +22,26 @@ repositories {
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
-    testImplementation 'com.codeborne:selenide:6.4.0'
-    testImplementation group: 'org.slf4j', name: 'slf4j-simple', version: '1.6.2'
+    implementation 'org.junit.jupiter:junit-jupiter:5.8.2'
+    implementation 'org.projectlombok:lombok:1.18.22'
+    implementation 'org.postgresql:postgresql:42.3.2'
+    implementation 'io.qameta.allure:allure-selenide:2.17.2'
+
+    testImplementation 'io.qameta.allure:allure-junit5:2.17.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.2'
     testImplementation 'com.github.javafaker:javafaker:1.0.2'
-    testImplementation 'io.qameta.allure:allure-selenide:2.17.3'
+    testImplementation 'commons-dbutils:commons-dbutils:1.7'
+    testImplementation 'com.codeborne:selenide:6.4.0'
+    testImplementation 'mysql:mysql-connector-java:8.0.19'
+    testImplementation 'io.rest-assured:rest-assured:4.3.0'
+
 }
 
 test {
     useJUnitPlatform()
     systemProperty 'selenide.headless', System.getProperty('selenide.headless')
     systemProperty 'db.url', System.getProperty('db.url')
-    System.getProperty("db.url")
+//    System.getProperty("db.url")
+    systemProperty 'db.user', System.getProperty('db.user', 'app')
+    systemProperty 'db.password', System.getProperty('db.password', 'pass')
 }

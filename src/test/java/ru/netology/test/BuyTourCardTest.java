@@ -6,13 +6,13 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.netology.data.DataHelper;
-import ru.netology.data.Page;
+import ru.netology.data.CardInfo;
+import ru.netology.data.DatabaseQuery;
+import ru.netology.page.StartPage;
 
-import java.time.Duration;
-
-import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.open;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static ru.netology.data.DataHelper.*;
 
 public class BuyTourCardTest {
 
@@ -24,93 +24,262 @@ public class BuyTourCardTest {
     @AfterAll
     static void tearDownAll() {
         SelenideLogger.removeListener("allure");
+        DatabaseQuery.deleteTables();
     }
 
     @BeforeEach
     public void openBrowser() {
         open("http://localhost:8080/");
-        Page.buttonBuy.click();
     }
 
     @Test
-    public void shouldBuyTourApprovedCard() {
-        Page.fieldCardNumber.setValue(DataHelper.getApprovedCard().getNumberCard());
-        Page.fieldMonth.setValue(DataHelper.getApprovedCard().getMonthCard());
-        Page.fieldYear.setValue(DataHelper.getApprovedCard().getYearCard());
-        Page.fieldCardHolder.setValue(DataHelper.getApprovedCard().getCardHolder());
-        Page.fieldCvC.setValue(DataHelper.getApprovedCard().getCvcCard());
-        Page.buttonNext.click();
-        Page.notificationTitleSuccess.should(appear, Duration.ofSeconds(100));
-        Page.notificationTitleSuccess.shouldBe(visible).shouldHave(text("Успешно"));
-        Page.notificationContentSuccess.shouldBe(visible).shouldHave(text("Операция одобрена Банком."));
+    void shouldBuyTourWithApprovedCard() {
+        var startPage = new StartPage();
+        CardInfo card = new CardInfo(
+                getApprovedCard(), getMonthCard(1), getYearCard(2), getCardHolder(), getCvc());
+        var paymentPage = startPage.payment();
+        paymentPage.getCardDataEntry(card);
+        paymentPage.successfulPaymentDebitCard();
+        String actual = DatabaseQuery.getStatusPayment();
+        assertEquals("APPROVED", actual);
     }
 
     @Test
-    public void shouldBuyTourDeclinedCard() {
-        Page.fieldCardNumber.setValue(DataHelper.getDeclinedCard().getNumberCard());
-        Page.fieldMonth.setValue(DataHelper.getDeclinedCard().getMonthCard());
-        Page.fieldYear.setValue(DataHelper.getDeclinedCard().getYearCard());
-        Page.fieldCardHolder.setValue(DataHelper.getDeclinedCard().getCardHolder());
-        Page.fieldCvC.setValue(DataHelper.getDeclinedCard().getCvcCard());
-        Page.buttonNext.click();
-        Page.notificationTitleError.should(appear, Duration.ofSeconds(100));
-        Page.notificationTitleError.shouldBe(visible).shouldHave(text("Ошибка"));
-        Page.notificationContentError.shouldBe(visible).shouldHave(text("Ошибка! Банк отказал в проведении операции."));
+    void shouldBuyTourWithDeclinedCard() {
+        var startPage = new StartPage();
+        CardInfo card = new CardInfo(
+                getDeclinedCard(), getMonthCard(0), getYearCard(1), getCardHolder(), getCvc());
+        var paymentPage = startPage.payment();
+        paymentPage.getCardDataEntry(card);
+        paymentPage.invalidPaymentDebitCard();
+        String actual = DatabaseQuery.getStatusPayment();
+        assertEquals("DECLINED", actual);
     }
 
     @Test
-    public void shouldBuyTourWithCardOutsideTest() {
-        Page.fieldCardNumber.setValue(DataHelper.getNotTestCard().getNumberCard());
-        Page.fieldMonth.setValue(DataHelper.getNotTestCard().getMonthCard());
-        Page.fieldYear.setValue(DataHelper.getNotTestCard().getYearCard());
-        Page.fieldCardHolder.setValue(DataHelper.getNotTestCard().getCardHolder());
-        Page.fieldCvC.setValue(DataHelper.getNotTestCard().getCvcCard());
-        Page.buttonNext.click();
-        Page.notificationTitleError.should(appear, Duration.ofSeconds(100));
-        Page.notificationTitleError.shouldBe(visible).shouldHave(text("Ошибка"));
-        Page.notificationContentError.shouldBe(visible).shouldHave(text("Ошибка! Банк отказал в проведении операции."));
+    void shouldBuyTourWithApprovedCardExpires() {
+        var startPage = new StartPage();
+        CardInfo card = new CardInfo(
+                getApprovedCard(), getMonthCard(0), getYearCard(0), getCardHolder(), getCvc());
+        var paymentPage = startPage.payment();
+        paymentPage.getCardDataEntry(card);
+        paymentPage.successfulPaymentDebitCard();
+        String actual = DatabaseQuery.getStatusPayment();
+        assertEquals("APPROVED", actual);
     }
 
     @Test
-    public void shouldSendEmptyForm() {
-        Page.buttonNext.click();
-        Page.invalidCardNumberFormat.shouldBe(visible).shouldHave(text("Неверный формат"));
-        Page.invalidMonthFormat.shouldBe(visible).shouldHave(text("Неверный формат"));
-        Page.invalidYearFormat.shouldBe(visible).shouldHave(text("Неверный формат"));
-        Page.emptyCardHolderField.shouldBe(visible).shouldHave(text("Поле обязательно для заполнения"));
-        Page.invalidCvCFormat.shouldBe(visible).shouldHave(text("Неверный формат"));
+    void shouldBuyTourWithDeclinedCardExpires() {
+        var startPage = new StartPage();
+        CardInfo card = new CardInfo(
+                getDeclinedCard(), getMonthCard(0), getYearCard(0), getCardHolder(), getCvc());
+        var paymentPage = startPage.payment();
+        paymentPage.getCardDataEntry(card);
+        paymentPage.invalidPaymentDebitCard();
+        String actual = DatabaseQuery.getStatusPayment();
+        assertEquals("DECLINED", actual);
     }
 
     @Test
-    public void shouldCloseNotificationWithContentError() {
-        Page.fieldCardNumber.setValue(DataHelper.getNotTestCard().getNumberCard());
-        Page.fieldMonth.setValue(DataHelper.getNotTestCard().getMonthCard());
-        Page.fieldYear.setValue(DataHelper.getNotTestCard().getYearCard());
-        Page.fieldCardHolder.setValue(DataHelper.getNotTestCard().getCardHolder());
-        Page.fieldCvC.setValue(DataHelper.getNotTestCard().getCvcCard());
-        Page.buttonNext.click();
-        Page.notificationTitleError.should(appear, Duration.ofSeconds(100));
-        Page.notificationTitleError.shouldBe(visible).shouldHave(text("Ошибка"));
-        Page.notificationContentError.shouldBe(visible).shouldHave(text("Ошибка! Банк отказал в проведении операции."));
-        Page.CloseNotificationWithContentError.click();
-        Page.notificationTitleSuccess.shouldBe(visible).shouldHave(text("Успешно"));
-        Page.notificationContentSuccess.shouldBe(visible).shouldHave(text("Операция одобрена Банком."));
+    void shouldBuyTourWithCardEmptyFieldCardNumber() {
+        var startPage = new StartPage();
+        CardInfo card = new CardInfo(
+                null, getMonthCard(1), getYearCard(2), getCardHolder(), getCvc());
+        var paymentPage = startPage.payment();
+        paymentPage.getCardDataEntry(card);
+        paymentPage.checkInvalidFormat();
     }
 
     @Test
-    public void shouldCheckingMessagesErrors() {
-        Page.buttonNext.click();
-        Page.fieldCardNumber.setValue(DataHelper.getApprovedCard().getNumberCard());
-        Page.fieldMonth.setValue(DataHelper.getApprovedCard().getMonthCard());
-        Page.fieldYear.setValue(DataHelper.getApprovedCard().getYearCard());
-        Page.fieldCardHolder.setValue(DataHelper.getApprovedCard().getCardHolder());
-        Page.fieldCvC.setValue(DataHelper.getApprovedCard().getCvcCard());
-        Page.buttonNext.click();
-        Page.notificationTitleSuccess.should(appear, Duration.ofSeconds(100));
-        Page.notificationTitleSuccess.shouldBe(visible).shouldHave(text("Успешно"));
-        Page.notificationContentSuccess.shouldBe(visible).shouldHave(text("Операция одобрена Банком."));
-        Page.invalidCardNumberFormat.shouldBe(visible).shouldHave(text("Неверный формат"));
-        Page.emptyCardHolderField.shouldBe(visible).shouldHave(text("Поле обязательно для заполнения"));
-        Page.invalidCvCFormat.shouldBe(visible).shouldHave(text("Неверный формат"));
+    void shouldBuyTourWithCardInvalidCardNumber() {
+        var startPage = new StartPage();
+        CardInfo card = new CardInfo(
+                getInvalidCardNumber(), getMonthCard(2), getYearCard(1), getCardHolder(), getCvc());
+        var paymentPage = startPage.payment();
+        paymentPage.getCardDataEntry(card);
+        paymentPage.invalidPaymentDebitCard();
+    }
+
+    @Test
+    void shouldBuyTourWithCardInvalidCardNumberShort() {
+        var startPage = new StartPage();
+        CardInfo card = new CardInfo(
+                getInvalidShortCardNumber(), getMonthCard(2), getYearCard(1), getCardHolder(), getCvc());
+        var paymentPage = startPage.payment();
+        paymentPage.getCardDataEntry(card);
+        paymentPage.checkInvalidFormat();
+    }
+
+    @Test
+    void shouldBuyTourWithCardEmptyFieldMonth() {
+        var startPage = new StartPage();
+        CardInfo card = new CardInfo(
+                getApprovedCard(), null, getYearCard(2), getCardHolder(), getCvc());
+        var paymentPage = startPage.payment();
+        paymentPage.getCardDataEntry(card);
+        paymentPage.checkInvalidFormat();
+    }
+
+    @Test
+    void shouldBuyTourWrongCardExpiryMonth() {
+        var startPage = new StartPage();
+        CardInfo card = new CardInfo(
+                getApprovedCard(), getMonthCard(-1), getYearCard(0), getCardHolder(), getCvc());
+        var paymentPage = startPage.payment();
+        paymentPage.getCardDataEntry(card);
+        paymentPage.checkInvalidCardValidityPeriod();
+    }
+
+    @Test
+    void shouldBuyTourWithCardInvalidMonthOneNumber() {
+        var startPage = new StartPage();
+        CardInfo card = new CardInfo(
+                getApprovedCard(), getInvalidMonthCardOneNumber(), getYearCard(2), getCardHolder(), getCvc());
+        var paymentPage = startPage.payment();
+        paymentPage.getCardDataEntry(card);
+        paymentPage.checkInvalidFormat();
+    }
+
+    @Test
+    void shouldBuyTourWithInvalidCardInvalidPeriodMonths() {
+        var startPage = new StartPage();
+        CardInfo card = new CardInfo(
+                getApprovedCard(), getInvalidMonthCardInvalidPeriod(), getYearCard(2), getCardHolder(), getCvc());
+        var paymentPage = startPage.payment();
+        paymentPage.getCardDataEntry(card);
+        paymentPage.checkInvalidCardValidityPeriod();
+    }
+
+    @Test
+    void shouldBuyTourCardInvalidMonth00() {
+        var startPage = new StartPage();
+        CardInfo card = new CardInfo(
+                getApprovedCard(), getInvalidMonthCard(), getYearCard(2), getCardHolder(), getCvc());
+        var paymentPage = startPage.payment();
+        paymentPage.getCardDataEntry(card);
+        paymentPage.checkInvalidCardValidityPeriod();
+    }
+
+    @Test
+    void shouldBuyTourWithCardEmptyFieldYears() {
+        var startPage = new StartPage();
+        CardInfo card = new CardInfo(
+                getApprovedCard(), getMonthCard(2), null, getCardHolder(), getCvc());
+        var paymentPage = startPage.payment();
+        paymentPage.getCardDataEntry(card);
+        paymentPage.checkInvalidFormat();
+    }
+
+    @Test
+    void shouldBuyTourWrongCardExpiryYear() {
+        var startPage = new StartPage();
+        CardInfo card = new CardInfo(
+                getApprovedCard(), getMonthCard(0), getYearCard(-1), getCardHolder(), getCvc());
+        var paymentPage = startPage.payment();
+        paymentPage.getCardDataEntry(card);
+        paymentPage.checkCardExpired();
+    }
+
+    @Test
+    void shouldBuyTourWithCardValidMoreThanFiveYears() {
+        var startPage = new StartPage();
+        CardInfo card = new CardInfo(
+                getApprovedCard(), getMonthCard(1), getYearCard(6), getCardHolder(), getCvc());
+        var paymentPage = startPage.payment();
+        paymentPage.getCardDataEntry(card);
+        paymentPage.checkInvalidCardValidityPeriod();
+    }
+
+    @Test
+    void shouldBuyTourWithCardInvalidCardYearOneNumber() {
+        var startPage = new StartPage();
+        CardInfo card = new CardInfo(
+                getApprovedCard(), getMonthCard(2), getInvalidYearCard(), getCardHolder(), getCvc());
+        var paymentPage = startPage.payment();
+        paymentPage.getCardDataEntry(card);
+        paymentPage.checkInvalidFormat();
+    }
+
+    @Test
+    void shouldBuyTourWithCardEmptyFieldCardHolder() {
+        var startPage = new StartPage();
+        CardInfo card = new CardInfo(
+                getApprovedCard(), getMonthCard(2), getYearCard(3), null, getCvc());
+        var paymentPage = startPage.payment();
+        paymentPage.getCardDataEntry(card);
+        paymentPage.checkEmptyField();
+    }
+
+    @Test
+    void shouldBuyTourWithCardIncorrectlyCardholder() {
+        var startPage = new StartPage();
+        CardInfo card = new CardInfo(
+                getApprovedCard(), getMonthCard(1), getYearCard(3), getInvalidCardHolder(), getCvc());
+        var paymentPage = startPage.payment();
+        paymentPage.getCardDataEntry(card);
+        paymentPage.checkInvalidCardHolder();
+    }
+
+    @Test
+    void shouldBuyTourWithCardInvalidCardholderCyrillic() {
+        var startPage = new StartPage();
+        CardInfo card = new CardInfo(
+                getApprovedCard(), getMonthCard(1), getYearCard(3),
+                getInvalidCardHolderCyrillic(), getCvc());
+        var paymentPage = startPage.payment();
+        paymentPage.getCardDataEntry(card);
+        paymentPage.wrongCardHolder();
+    }
+
+    @Test
+    void shouldBuyTourWithCardInvalidCardholderWithNumbers() {
+        var startPage = new StartPage();
+        CardInfo card = new CardInfo(
+                getApprovedCard(), getMonthCard(1), getYearCard(3), getInvalidCardHolderWithNumbers(),
+                getCvc());
+        var paymentPage = startPage.payment();
+        paymentPage.getCardDataEntry(card);
+        paymentPage.wrongCardHolder();
+    }
+
+    @Test
+    void shouldBuyTourWithCardInvalidCardholderNameConsistingOneLetter() {
+        var startPage = new StartPage();
+        CardInfo card = new CardInfo(
+                getApprovedCard(), getMonthCard(1), getYearCard(3), getInvalidCardHolderOneLetterName(),
+                getCvc());
+        var paymentPage = startPage.payment();
+        paymentPage.getCardDataEntry(card);
+        paymentPage.wrongCardHolder();
+    }
+
+    @Test
+    void shouldBuyTourWithCardEmptyFieldCvc() {
+        var startPage = new StartPage();
+        CardInfo card = new CardInfo(
+                getApprovedCard(), getMonthCard(2), getYearCard(3), getCardHolder(), null);
+        var paymentPage = startPage.payment();
+        paymentPage.getCardDataEntry(card);
+        paymentPage.checkEmptyField();
+    }
+
+    @Test
+    void shouldBuyTourWithCardInvalidCvcShort() {
+        var startPage = new StartPage();
+        CardInfo card = new CardInfo(
+                getApprovedCard(), getMonthCard(1), getYearCard(2), getCardHolder(), getInvalidCvc());
+        var paymentPage = startPage.payment();
+        paymentPage.getCardDataEntry(card);
+        paymentPage.checkInvalidFormat();
+    }
+
+    @Test
+    void shouldBuyTourWithCardEmptyAllField() {
+        var startPage = new StartPage();
+        CardInfo card = new CardInfo(
+                null, null, null, null, null);
+        var paymentPage = startPage.payment();
+        paymentPage.getCardDataEntry(card);
+        paymentPage.checkAllFieldsMustBeFilled();
     }
 }
