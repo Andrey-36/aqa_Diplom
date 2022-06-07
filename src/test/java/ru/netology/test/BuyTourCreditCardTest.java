@@ -45,7 +45,7 @@ public class BuyTourCreditCardTest {
     }
 
     @Test
-    public void shouldBuyTourWithDeclinedCard() {
+    public void shouldGetErrorBuyTourWithDeclinedCard() {
         var startPage = new StartPage();
         CardInfo card = new CardInfo(
                 getDeclinedCard(), getMonthCard(0), getYearCard(1), getCardHolder(), getCvc());
@@ -69,7 +69,7 @@ public class BuyTourCreditCardTest {
     }
 
     @Test
-    void shouldBuyTourWithDeclinedCardExpires() {
+    void shouldGetErrorBuyTourWithDeclinedCardExpires() {
         var startPage = new StartPage();
         CardInfo card = new CardInfo(
                 getDeclinedCard(), getMonthCard(0), getYearCard(0), getCardHolder(), getCvc());
@@ -81,7 +81,7 @@ public class BuyTourCreditCardTest {
     }
 
     @Test
-    void shouldBuyTourWithCardEmptyFieldCardNumber() {
+    void shouldGetErrorBuyTourWithCardEmptyFieldCardNumber() {
         var startPage = new StartPage();
         CardInfo card = new CardInfo(
                 null, getMonthCard(1), getYearCard(2), getCardHolder(), getCvc());
@@ -91,7 +91,7 @@ public class BuyTourCreditCardTest {
     }
 
     @Test
-    void shouldBuyTourWithCardInvalidCardNumber() {
+    void shouldGetErrorBuyTourWithCardInvalidCardNumber() {
         var startPage = new StartPage();
         CardInfo card = new CardInfo(
                 getInvalidCardNumber(), getMonthCard(2), getYearCard(1), getCardHolder(), getCvc());
@@ -101,7 +101,7 @@ public class BuyTourCreditCardTest {
     }
 
     @Test
-    void shouldBuyTourWithCardInvalidCardNumberShort() {
+    void shouldGetErrorBuyTourWithCardInvalidCardNumberShort() {
         var startPage = new StartPage();
         CardInfo card = new CardInfo(
                 getInvalidShortCardNumber(), getMonthCard(2), getYearCard(1), getCardHolder(), getCvc());
@@ -111,7 +111,47 @@ public class BuyTourCreditCardTest {
     }
 
     @Test
-    void shouldBuyTourWithCardEmptyFieldMonth() {
+    void shouldGetErrorBuyTourWithCardInvalidCardNumberLong() {
+        var startPage = new StartPage();
+        CardInfo card = new CardInfo(
+                getInvalidLongCardNumber(), getMonthCard(2), getYearCard(1), getCardHolder(), getCvc());
+        var creditPage = startPage.payment();
+        creditPage.getCardDataEntry(card);
+        creditPage.checkInvalidFormat();
+    }
+
+    @Test
+    void shouldGetErrorBuyTourWithCardInvalidCardNumberZero() {
+        var startPage = new StartPage();
+        CardInfo card = new CardInfo(
+                getInvalidCardNumberZero(), getMonthCard(2), getYearCard(1), getCardHolder(), getCvc());
+        var creditPage = startPage.payment();
+        creditPage.getCardDataEntry(card);
+        creditPage.checkInvalidFormat();
+    }
+
+    @Test
+    void shouldGetErrorBuyTourWithCardInvalidCardNumberLetter() {
+        var startPage = new StartPage();
+        CardInfo card = new CardInfo(
+                getInvalidCardNumberLetter(), getMonthCard(2), getYearCard(1), getCardHolder(), getCvc());
+        var creditPage = startPage.payment();
+        creditPage.getCardDataEntry(card);
+        creditPage.checkInvalidFormat();
+    }
+
+    @Test
+    void shouldGetErrorBuyTourWithCardInvalidCardNumberSymbols() {
+        var startPage = new StartPage();
+        CardInfo card = new CardInfo(
+                getInvalidCardNumberSymbols(), getMonthCard(2), getYearCard(1), getCardHolder(), getCvc());
+        var creditPage = startPage.payment();
+        creditPage.getCardDataEntry(card);
+        creditPage.checkInvalidFormat();
+    }
+
+    @Test
+    void shouldGetErrorBuyTourWithCardEmptyFieldMonth() {
         var startPage = new StartPage();
         CardInfo card = new CardInfo(
                 getApprovedCard(), null, getYearCard(2), getCardHolder(), getCvc());
@@ -121,7 +161,7 @@ public class BuyTourCreditCardTest {
     }
 
     @Test
-    void shouldBuyTourWrongCardExpiryMonth() {
+    void shouldGetErrorBuyTourWrongCardExpiryMonth() {
         var startPage = new StartPage();
         CardInfo card = new CardInfo(
                 getApprovedCard(), getMonthCard(-1), getYearCard(0), getCardHolder(), getCvc());
@@ -131,7 +171,7 @@ public class BuyTourCreditCardTest {
     }
 
     @Test
-    void shouldBuyTourWithCardInvalidMonthOneNumber() {
+    void shouldGetErrorBuyTourWithCardInvalidMonthOneNumber() {
         var startPage = new StartPage();
         CardInfo card = new CardInfo(
                 getApprovedCard(), getInvalidMonthCardOneNumber(), getYearCard(2), getCardHolder(), getCvc());
@@ -141,7 +181,7 @@ public class BuyTourCreditCardTest {
     }
 
     @Test
-    void shouldBuyTourWithInvalidCardInvalidPeriodMonths() {
+    void shouldGetErrorBuyTourWithCardInvalidPeriodMonths() {
         var startPage = new StartPage();
         CardInfo card = new CardInfo(
                 getApprovedCard(), getInvalidMonthCardInvalidPeriod(), getYearCard(2), getCardHolder(), getCvc());
@@ -151,7 +191,7 @@ public class BuyTourCreditCardTest {
     }
 
     @Test
-    void shouldBuyTourCardInvalidMonth00() {
+    void shouldGetErrorBuyTourCardInvalidMonthZero() {
         var startPage = new StartPage();
         CardInfo card = new CardInfo(
                 getApprovedCard(), getInvalidMonthCard(), getYearCard(2), getCardHolder(), getCvc());
@@ -161,7 +201,27 @@ public class BuyTourCreditCardTest {
     }
 
     @Test
-    void shouldBuyTourWithCardEmptyFieldYears() {
+    void shouldGetErrorBuyTourCardInvalidMonthLetter() {
+        var startPage = new StartPage();
+        CardInfo card = new CardInfo(
+                getApprovedCard(), getInvalidMonthCardLetter(), getYearCard(2), getCardHolder(), getCvc());
+        var creditPage = startPage.payment();
+        creditPage.getCardDataEntry(card);
+        creditPage.checkInvalidFormat();
+    }
+
+    @Test
+    void shouldGetErrorBuyTourCardInvalidMonthSymbols() {
+        var startPage = new StartPage();
+        CardInfo card = new CardInfo(
+                getApprovedCard(), getInvalidMonthCardSymbols(), getYearCard(2), getCardHolder(), getCvc());
+        var creditPage = startPage.payment();
+        creditPage.getCardDataEntry(card);
+        creditPage.checkInvalidFormat();
+    }
+
+    @Test
+    void shouldGetErrorBuyTourWithCardEmptyFieldYears() {
         var startPage = new StartPage();
         CardInfo card = new CardInfo(
                 getApprovedCard(), getMonthCard(2), null, getCardHolder(), getCvc());
@@ -171,7 +231,7 @@ public class BuyTourCreditCardTest {
     }
 
     @Test
-    void shouldBuyTourWrongCardExpiryYear() {
+    void shouldGetErrorBuyTourWrongCardExpiryYear() {
         var startPage = new StartPage();
         CardInfo card = new CardInfo(
                 getApprovedCard(), getMonthCard(0), getYearCard(-1), getCardHolder(), getCvc());
@@ -181,7 +241,7 @@ public class BuyTourCreditCardTest {
     }
 
     @Test
-    void shouldBuyTourWithCardValidMoreThanFiveYears() {
+    void shouldGetErrorBuyTourWithCardValidMoreThanFiveYears() {
         var startPage = new StartPage();
         CardInfo card = new CardInfo(
                 getApprovedCard(), getMonthCard(1), getYearCard(6), getCardHolder(), getCvc());
@@ -191,7 +251,7 @@ public class BuyTourCreditCardTest {
     }
 
     @Test
-    void shouldBuyTourWithCardInvalidCardYearOneNumber() {
+    void shouldGetErrorBuyTourWithCardInvalidYearOneNumber() {
         var startPage = new StartPage();
         CardInfo card = new CardInfo(
                 getApprovedCard(), getMonthCard(2), getInvalidYearCard(), getCardHolder(), getCvc());
@@ -201,7 +261,37 @@ public class BuyTourCreditCardTest {
     }
 
     @Test
-    void shouldBuyTourWithCardEmptyFieldCardHolder() {
+    void shouldGetErrorBuyTourWithCardInvalidCardYearLongNumber() {
+        var startPage = new StartPage();
+        CardInfo card = new CardInfo(
+                getApprovedCard(), getMonthCard(2), getInvalidYearCardLong(), getCardHolder(), getCvc());
+        var creditPage = startPage.payment();
+        creditPage.getCardDataEntry(card);
+        creditPage.checkInvalidCardValidityPeriod();
+    }
+
+    @Test
+    void shouldGetErrorBuyTourWithCardInvalidCardYearZero() {
+        var startPage = new StartPage();
+        CardInfo card = new CardInfo(
+                getApprovedCard(), getMonthCard(2), getInvalidYearCardZero(), getCardHolder(), getCvc());
+        var creditPage = startPage.payment();
+        creditPage.getCardDataEntry(card);
+        creditPage.checkCardExpired();
+    }
+
+    @Test
+    void shouldGetErrorBuyTourWithCardInvalidCardYearSymbols() {
+        var startPage = new StartPage();
+        CardInfo card = new CardInfo(
+                getApprovedCard(), getMonthCard(2), getInvalidYearCardSymbols(), getCardHolder(), getCvc());
+        var creditPage = startPage.payment();
+        creditPage.getCardDataEntry(card);
+        creditPage.checkInvalidFormat();
+    }
+
+    @Test
+    void shouldGetErrorBuyTourWithCardEmptyFieldCardHolder() {
         var startPage = new StartPage();
         CardInfo card = new CardInfo(
                 getApprovedCard(), getMonthCard(2), getYearCard(3), null, getCvc());
@@ -211,7 +301,7 @@ public class BuyTourCreditCardTest {
     }
 
     @Test
-    void shouldBuyTourWithCardIncorrectlyCardholder() {
+    void shouldGetErrorBuyTourWithCardIncorrectlyCardholder() {
         var startPage = new StartPage();
         CardInfo card = new CardInfo(
                 getApprovedCard(), getMonthCard(1), getYearCard(3), getInvalidCardHolder(), getCvc());
@@ -221,7 +311,7 @@ public class BuyTourCreditCardTest {
     }
 
     @Test
-    void shouldBuyTourWithCardInvalidCardholderCyrillic() {
+    void shouldGetErrorBuyTourWithCardInvalidCardholderCyrillic() {
         var startPage = new StartPage();
         CardInfo card = new CardInfo(
                 getApprovedCard(), getMonthCard(1), getYearCard(3),
@@ -232,7 +322,7 @@ public class BuyTourCreditCardTest {
     }
 
     @Test
-    void shouldBuyTourWithCardInvalidCardholderWithNumbers() {
+    void shouldGetErrorBuyTourWithCardInvalidCardholderWithNumbers() {
         var startPage = new StartPage();
         CardInfo card = new CardInfo(
                 getApprovedCard(), getMonthCard(1), getYearCard(3),
@@ -243,7 +333,18 @@ public class BuyTourCreditCardTest {
     }
 
     @Test
-    void shouldBuyTourWithCardInvalidCardholderNameConsistingOneLetter() {
+    void shouldGetErrorBuyTourWithCardInvalidCardholderWithSymbols() {
+        var startPage = new StartPage();
+        CardInfo card = new CardInfo(
+                getApprovedCard(), getMonthCard(1), getYearCard(3), getInvalidCardHolderSymbols(),
+                getCvc());
+        var creditPage = startPage.payment();
+        creditPage.getCardDataEntry(card);
+        creditPage.wrongCardHolder();
+    }
+
+    @Test
+    void shouldGetErrorBuyTourWithCardInvalidCardholderNameConsistingOneLetter() {
         var startPage = new StartPage();
         CardInfo card = new CardInfo(
                 getApprovedCard(), getMonthCard(1), getYearCard(3), getInvalidCardHolderOneLetterName(),
@@ -254,7 +355,7 @@ public class BuyTourCreditCardTest {
     }
 
     @Test
-    void shouldBuyTourWithCardEmptyFieldCvc() {
+    void shouldGetErrorBuyTourWithCardEmptyFieldCvc() {
         var startPage = new StartPage();
         CardInfo card = new CardInfo(
                 getApprovedCard(), getMonthCard(2), getYearCard(3), getCardHolder(), null);
@@ -264,7 +365,37 @@ public class BuyTourCreditCardTest {
     }
 
     @Test
-    void shouldBuyTourWithCardInvalidCvcShort() {
+    void shouldGetErrorBuyTourCardInvalidCvcZero() {
+        var startPage = new StartPage();
+        CardInfo card = new CardInfo(
+                getApprovedCard(), getMonthCard(2), getYearCard(2), getCardHolder(), getInvalidCvcZero());
+        var creditPage = startPage.payment();
+        creditPage.getCardDataEntry(card);
+        creditPage.checkInvalidFormat();
+    }
+
+    @Test
+    void shouldGetErrorBuyTourCardInvalidCvcLetter() {
+        var startPage = new StartPage();
+        CardInfo card = new CardInfo(
+                getApprovedCard(), getMonthCard(2), getYearCard(2), getCardHolder(), getInvalidCvcLetter());
+        var creditPage = startPage.payment();
+        creditPage.getCardDataEntry(card);
+        creditPage.checkInvalidFormat();
+    }
+
+    @Test
+    void shouldGetErrorBuyTourCardInvalidCvcSymbols() {
+        var startPage = new StartPage();
+        CardInfo card = new CardInfo(
+                getApprovedCard(), getMonthCard(2), getYearCard(2), getCardHolder(), getInvalidCvcSymbols());
+        var creditPage = startPage.payment();
+        creditPage.getCardDataEntry(card);
+        creditPage.checkInvalidFormat();
+    }
+
+    @Test
+    void shouldGetErrorBuyTourWithCardInvalidCvcShort() {
         var startPage = new StartPage();
         CardInfo card = new CardInfo(
                 getApprovedCard(), getMonthCard(1), getYearCard(2), getCardHolder(), getInvalidCvc());
@@ -274,7 +405,7 @@ public class BuyTourCreditCardTest {
     }
 
     @Test
-    void shouldBuyTourWithCardEmptyAllField() {
+    void shouldGetErrorBuyTourWithCardEmptyAllField() {
         var startPage = new StartPage();
         CardInfo card = new CardInfo(
                 null, null, null, null, null);

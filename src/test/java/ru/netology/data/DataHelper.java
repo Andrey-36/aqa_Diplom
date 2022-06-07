@@ -21,16 +21,29 @@ public class DataHelper {
     }
 
     public static String getInvalidCardNumber() {
-        return faker.finance().creditCard();
+        return ("4444444444444443");
     }
 
     public static String getInvalidShortCardNumber() {
         return faker.numerify("#### #### #### ###");
     }
 
-    public static String getMonthCard(int plusMonth) {
-        return LocalDate.now().plusMonths(plusMonth).format(DateTimeFormatter.ofPattern("MM"));
+    public static String getInvalidLongCardNumber() {
+        return faker.numerify("#### #### #### #### #");
     }
+
+    public static String getInvalidCardNumberZero() {
+        return "0000 0000 0000 0000";
+    }
+
+    public static String getInvalidCardNumberLetter() {
+        return "QWER ASDF ZXCV TYUI";
+    }
+
+    public static String getInvalidCardNumberSymbols() { return "!@#$ %^&* ~!@# ^&*("; }
+
+    public static String getMonthCard(int plusMonth) {
+        return LocalDate.now().plusMonths(plusMonth).format(DateTimeFormatter.ofPattern("MM")); }
 
     public static String getInvalidMonthCard() {
         return "00";
@@ -44,12 +57,27 @@ public class DataHelper {
         return "21";
     }
 
+    public static String getInvalidMonthCardLetter() { return "AB"; }
+
+    public static String getInvalidMonthCardSymbols() { return "!@"; }
+
     public static String getYearCard(int plusYears) {
-        return LocalDate.now().plusYears(plusYears).format(DateTimeFormatter.ofPattern("yy"));
-    }
+        return LocalDate.now().plusYears(plusYears).format(DateTimeFormatter.ofPattern("yy")); }
 
     public static String getInvalidYearCard() {
         return faker.numerify("#");
+    }
+
+    public static String getInvalidYearCardLong() {
+        return faker.numerify("###");
+    }
+
+    public static String getInvalidYearCardZero() {
+        return "00";
+    }
+
+    public static String getInvalidYearCardSymbols() {
+        return "!@";
     }
 
     public static String getCardHolder() {
@@ -60,18 +88,15 @@ public class DataHelper {
         return faker.name().firstName();
     }
 
-    public static String getInvalidCardHolderCyrillic() {
-        Faker faker = new Faker(new Locale("ru"));
-        return faker.name().name();
-    }
+    public static String getInvalidCardHolderCyrillic() { Faker faker = new Faker(new Locale("ru"));
+        return faker.name().name(); }
 
     public static String getInvalidCardHolderWithNumbers() {
-        return (faker.name().firstName() + faker.numerify("#######"));
-    }
+        return (faker.name().firstName() + faker.numerify("#######")); }
 
-    public static String getInvalidCardHolderOneLetterName() {
-        return "A";
-    }
+    public static String getInvalidCardHolderOneLetterName() { return "A"; }
+
+    public static String getInvalidCardHolderSymbols() { return "!@#$%^&*()~"; }
 
     public static String getCvc() {
         return faker.numerify("###");
@@ -80,4 +105,12 @@ public class DataHelper {
     public static String getInvalidCvc() {
         return faker.numerify("##");
     }
+
+    public static String getInvalidCvcZero() {
+        return "000";
+    }
+
+    public static String getInvalidCvcLetter() { return "ABC"; }
+
+    public static String getInvalidCvcSymbols() { return "!@#"; }
 }

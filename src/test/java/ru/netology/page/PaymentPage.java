@@ -36,41 +36,41 @@ public class PaymentPage {
 
     public void successfulPaymentDebitCard() {
         $(".notification_status_ok")
-                .shouldHave(text("Успешно Операция одобрена Банком."), Duration.ofSeconds(60)).shouldBe(visible);
+                .shouldHave(text("Успешно Операция одобрена Банком."), Duration.ofSeconds(150)).shouldBe(visible);
     }
 
     public void invalidPaymentDebitCard() {
         $(".notification_status_error")
-                .shouldHave(text("Ошибка! Банк отказал в проведении операции."), Duration.ofSeconds(60)).shouldBe(visible);
+                .shouldHave(text("Ошибка! Банк отказал в проведении операции."), Duration.ofSeconds(150)).shouldBe(visible);
     }
 
     public void checkInvalidFormat() {
-        $(".input__sub").shouldBe(visible).shouldHave(text("Неверный формат"), Duration.ofSeconds(60));
+        $(".input__sub").shouldBe(visible).shouldHave(text("Неверный формат"), Duration.ofSeconds(150));
     }
 
     public void checkInvalidCardValidityPeriod() {
         $(".input__sub").shouldBe(visible)
-                .shouldHave(text("Неверно указан срок действия карты"), Duration.ofSeconds(60));
+                .shouldHave(text("Неверно указан срок действия карты"), Duration.ofSeconds(150));
     }
 
     public void checkCardExpired() {
         $(".input__sub").shouldBe(visible)
-                .shouldHave(text("Истёк срок действия карты"), Duration.ofSeconds(60));
+                .shouldHave(text("Истёк срок действия карты"), Duration.ofSeconds(150));
     }
 
     public void checkInvalidCardHolder() {
         $(".input__sub").shouldBe(visible)
-                .shouldHave(text("Введите имя и фамилию, указанные на карте"), Duration.ofSeconds(60));
+                .shouldHave(text("Введите имя и фамилию, указанные на карте"), Duration.ofSeconds(150));
     }
 
     public void wrongCardHolder() {
         $(".input__sub").shouldBe(visible)
-                .shouldHave(text("Значение поля может содержать только латинские буквы и дефис"), Duration.ofSeconds(60));
+                .shouldHave(text("Значение поля может содержать только латинские буквы и дефис"), Duration.ofSeconds(150));
     }
 
     public void checkEmptyField() {
         $(".input__sub").shouldBe(visible)
-                .shouldHave(text("Поле обязательно для заполнения"), Duration.ofSeconds(60));
+                .shouldHave(text("Поле обязательно для заполнения"), Duration.ofSeconds(150));
     }
 
     public void checkAllFieldsMustBeFilled() {
